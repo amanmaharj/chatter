@@ -1,0 +1,23 @@
+{
+  "name": "project4-chatter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js "
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amanmaharj/chatter.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/amanmaharj/chatter/issues"
+  },
+  "homepage": "https://github.com/amanmaharj/chatter#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
