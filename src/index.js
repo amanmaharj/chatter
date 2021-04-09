@@ -34,7 +34,12 @@ io.on('connection', ( socket )=>{
     socket.on('sendMessage', (message)=>{
         io.emit('message', message)
     })
-    
+
+    socket.on('sendLocation', (pos)=>{
+        //receiving the information from the sendlocation event and displaying it
+        io.emit('message', `https://google.com/maps?q=${pos.lati},${pos.longi}`)
+    })
+
 //built in event 'disconnect' and send the message to the all the user in that connection
     socket.on('disconnect', () => {
         io.emit('message', 'user has left')
