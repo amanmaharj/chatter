@@ -19,8 +19,26 @@ const publicDirectoryPath = path.join(__dirname, '../public')//'../ helps to go 
 app.use(express.static(publicDirectoryPath))
 
 //used to check the connection established between the user and server but had to add /socket.io/socket.io.js(created automatically for us) and /js/chat.js in index.html file
-io.on('connection', ()=>{
+// let count = 0;
+let greet = 'Welcome!!'
+
+//io.on is used for the users who have connected in that server
+io.on('connection', ( socket )=>{
     console.log('new connection')
+//send event server custom one
+//message is the event name and greet is the data to be send
+    socket.emit('message', greet)
+//send it to everybody except the one who joined the connection(particular connection)
+    socket.broadcast.emit('message','New user has joined')
+
+    socket.on('sendMessage', (message)=>{
+        io.emit('message', message)
+    })
+    
+//built in event 'disconnect' and send the message to the all the user in that connection
+    socket.on('disconnect', () => {
+        io.emit('message', 'user has left')
+    })
 })
 
 
