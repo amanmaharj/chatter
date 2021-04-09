@@ -52,7 +52,7 @@ io.on('connection', ( socket )=>{
 //callback parameter has been acknowledgement
     socket.on('sendLocation', (pos, callback)=>{
         //receiving the information from the sendlocation event and displaying it
-        io.emit('message', `https://google.com/maps?q=${pos.lati},${pos.longi}`)
+        io.emit('locationMessage', `https://google.com/maps?q=${pos.lati},${pos.longi}`)
         callback()
     })
 

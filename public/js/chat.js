@@ -6,12 +6,37 @@ const $messageForm = document.querySelector('#message-form')
 const $messageFormInput = $messageForm.querySelector('input')
 const $messageFormButton = $messageForm.querySelector('button')
 
+//elements of the page to render the message
+const $messages = document.querySelector('#messages')
+
+
+
+//tempalates //innerHtml is used to render something in the browser
+const messageTemplate = document.querySelector('#message-template').innerHTML
+const locationMessageTemplate = document.querySelector('#location-message-template').innerHTML
+
 //elements of the button of the location
 const $sendLocationButton = document.querySelector('#send-location')
 
 //message is the event name and second parameter is the callback function
 socket.on('message',(msg)=>{
     console.log(msg)
+    //messageTemplate is render with the object key value , value is transfered from the msg.
+    const html = Mustache.render(messageTemplate,{
+        message : msg
+    })
+    //insertAdjacentHTML method is used to add extra html element
+    $messages.insertAdjacentHTML('beforeend', html)
+})
+
+//location message event listener
+socket.on('locationMessage',(url)=>{
+    console.log(url)
+
+    const html = Mustache.render(locationMessageTemplate,{
+        url
+    })
+    $messages.insertAdjacentHTML('beforeend',html)
 })
 
 $messageForm.addEventListener('submit', (e)=>{
