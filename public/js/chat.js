@@ -14,6 +14,7 @@ const $messages = document.querySelector('#messages')
 //tempalates //innerHtml is used to render something in the browser
 const messageTemplate = document.querySelector('#message-template').innerHTML
 const locationMessageTemplate = document.querySelector('#location-message-template').innerHTML
+const sidebarTemplate = document.querySelector('#sidebar-template').innerHTML
 
 //Options Qs is accessible from the script src js file loaded in the chat.html page, location.search is the global method used to fetch the query string provided from the index.html form
 //Qs.parse help us to parse the query string from the url, The prefix can be ignore i.e. '?' sign with the help of the ignorequeryprefix method.
@@ -47,6 +48,16 @@ socket.on('locationMessage',(message)=>{
         createdAt: moment(message.createdAt).format('hh:mm A')
     })
     $messages.insertAdjacentHTML('beforeend',html)
+})
+
+//listener used to listen the event roomData to get the information about the room and users name
+socket.on('roomData',({room, users})=>{
+   const html = Mustache.render(sidebarTemplate, {
+       room,
+       users
+
+   })
+   document.querySelector('#sidebar').innerHTML = html
 })
 
 $messageForm.addEventListener('submit', (e)=>{

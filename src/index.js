@@ -53,6 +53,11 @@ io.on('connection', ( socket )=>{
     //to(room) function help to emit the message to that specific room
     //chatter is the static data value
         socket.broadcast.to(user.room).emit('message', generateMessage('Chatter Team',`${user.username} has joined!`))
+        //send from the server to client with event name roomData with the information of that userroom, and all the users store in that room
+        io.to(user.room).emit('roomData',{
+            room : user.room,
+            users : getUsersInRoom(user.room)
+        })
 
         callback()
     })
@@ -88,6 +93,10 @@ io.on('connection', ( socket )=>{
 //make sure that the message is provided to that specific room with the to() function attached
         if(user){
             io.to(user.room).emit('message', generateMessage('Chatter Team',`${user.username} has left!`))
+            io.to(user.room).emit('roomData',{
+                room : user.room,
+                users : getUsersInRoom(user.room)
+            })
         }
         
     })
