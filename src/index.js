@@ -3,6 +3,10 @@ const express = require('express')
 const path = require('path')
 const socketio = require('socket.io')
 const Filter = require('bad-words')
+const { generateMessage, generateLocation } = require('./utils/messages')
+const {addUsers,removeUsers, getUser, getUsersInRoom} = require('./utils/users')
+
+
 
 const app = express()
 //The variable server is just used for creating raw http server. which is really important for passing to the socketio function
@@ -22,17 +26,27 @@ app.use(express.static(publicDirectoryPath))
 
 //used to check the connection established between the user and server but had to add /socket.io/socket.io.js(created automatically for us) and /js/chat.js in index.html file
 // let count = 0;
-let greet = 'Welcome!!'
+
 
 //io.on is used for the users who have connected in that server
 io.on('connection', ( socket )=>{
     console.log('new connection')
-//send event server custom one
-//message is the event name and greet is the data to be send
-    socket.emit('message', greet)
 
-//send it to everybody except the one who joined the connection(particular connection)
-    socket.broadcast.emit('message','New user has joined')
+//listener for the room and username from the client side destructuring help us to access the uerroom and room individually
+    socket.on('join', ({username, room})=>{
+
+        const{error, user} = addUsers({id: socket.id, username, room})
+        //socket.join method is the only method provided by the socket.io that can only be used in the serverside.
+        socket.join(room)
+        //send event server custom one
+        //we had to send the date data as well as the message so we will send it as the object key-value since there are lots of place we had to do like this we will create
+        //a function in the utils/messages.js file and call the generateMesage function from there.
+        socket.emit('message', generateMessage('welcome'))
+
+    //send it to everybody in the specific room except the one who joined the connection(particular connection)
+    //to(room) function help to emit the message to that specific room
+        socket.broadcast.to(room).emit('message', generateMessage(`${username} has joined!`))
+    })
 
 //callback is used for the acknowledgement, we can use this callback to send message to the client
     socket.on('sendMessage', (message, callback)=>{
@@ -44,7 +58,7 @@ io.on('connection', ( socket )=>{
             return callback('Profanity is not allowed')
         }
 
-        io.emit('message', message)
+        io.emit('message', generateMessage(message))
 //passing the message to the client as an acknowledgement
         callback()
        
@@ -52,13 +66,13 @@ io.on('connection', ( socket )=>{
 //callback parameter has been acknowledgement
     socket.on('sendLocation', (pos, callback)=>{
         //receiving the information from the sendlocation event and displaying it
-        io.emit('locationMessage', `https://google.com/maps?q=${pos.lati},${pos.longi}`)
+        io.emit('locationMessage', generateLocation(`https://google.com/maps?q=${pos.lati},${pos.longi}`))
         callback()
     })
 
 //built in event 'disconnect' and send the message to the all the user in that connection
     socket.on('disconnect', () => {
-        io.emit('message', 'user has left')
+        io.emit('message', generateMessage('user has left'))
     })
 })
 

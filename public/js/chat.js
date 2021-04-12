@@ -15,26 +15,34 @@ const $messages = document.querySelector('#messages')
 const messageTemplate = document.querySelector('#message-template').innerHTML
 const locationMessageTemplate = document.querySelector('#location-message-template').innerHTML
 
+//Options Qs is accessible from the script src js file loaded in the chat.html page, location.search is the global method used to fetch the query string provided from the index.html form
+//Qs.parse help us to parse the query string from the url, The prefix can be ignore i.e. '?' sign with the help of the ignorequeryprefix method.
+const { username, room } = Qs.parse(location.search, {ignoreQueryPrefix: true})
+
+
 //elements of the button of the location
 const $sendLocationButton = document.querySelector('#send-location')
 
-//message is the event name and second parameter is the callback function
-socket.on('message',(msg)=>{
-    console.log(msg)
+//message is the event name and second parameter is the callback function which has the value in the format of object which contain text and timestamp
+socket.on('message',(message)=>{
+    console.log(message)
     //messageTemplate is render with the object key value , value is transfered from the msg.
     const html = Mustache.render(messageTemplate,{
-        message : msg
+        message : message.text,
+        //moment is used to make the timestamp more human readable
+        createdAt: moment(message.createdAt).format('hh:mm A')
     })
     //insertAdjacentHTML method is used to add extra html element
     $messages.insertAdjacentHTML('beforeend', html)
 })
 
 //location message event listener
-socket.on('locationMessage',(url)=>{
-    console.log(url)
+socket.on('locationMessage',(message)=>{
+    console.log(message)
 
     const html = Mustache.render(locationMessageTemplate,{
-        url
+        url : message.url,
+        createdAt: moment(message.createdAt).format('hh:mm A')
     })
     $messages.insertAdjacentHTML('beforeend',html)
 })
@@ -89,3 +97,4 @@ $sendLocationButton.addEventListener('click',()=>{
 
 })
 
+socket.emit('join',{ username, room })
