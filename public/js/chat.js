@@ -28,6 +28,7 @@ socket.on('message',(message)=>{
     console.log(message)
     //messageTemplate is render with the object key value , value is transfered from the msg.
     const html = Mustache.render(messageTemplate,{
+        username: message.username,
         message : message.text,
         //moment is used to make the timestamp more human readable
         createdAt: moment(message.createdAt).format('hh:mm A')
@@ -41,6 +42,7 @@ socket.on('locationMessage',(message)=>{
     console.log(message)
 
     const html = Mustache.render(locationMessageTemplate,{
+        username: message.username,
         url : message.url,
         createdAt: moment(message.createdAt).format('hh:mm A')
     })
@@ -97,4 +99,9 @@ $sendLocationButton.addEventListener('click',()=>{
 
 })
 
-socket.emit('join',{ username, room })
+socket.emit('join',{ username, room },(error)=>{
+    if(error){
+        alert(error)
+        location.href = '/'
+    }
+})
